@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-/**
- * Created by User on 06.05.2017.
- */
-
 public class ServerConnection implements Runnable{
 
     Socket client;
@@ -18,31 +14,44 @@ public class ServerConnection implements Runnable{
 
     String ip;
     Integer port;
+    public String data = "empty";
     boolean dirRBStatus;
     boolean remRBStatus;
 
-    public void run(){
-        Thread thread = new Thread(this);
-        thread.start();
-        try {
-            client = new Socket(ip.toString(), port);
-            printWriter = new PrintWriter(client.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //   printWriter.write("Up");
-        //   printWriter.flush();
-        //   printWriter.close();
-    }
-
-    public void stream(String data){
-        Log.d("TTT", "Input data is: "+ data);
-    }
+    private boolean runner = true;
 
     public ServerConnection(String ip, Integer port, boolean dirRBStatus, boolean remRBStatus){
         this.ip = ip;
         this.port = port;
         this.dirRBStatus = dirRBStatus;
         this.remRBStatus = remRBStatus;
+    }
+
+    public void stop(){
+        runner = false;
+    }
+
+    public void run(){
+        try {
+            client = new Socket(ip, port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        while(runner){
+            if(!data.equals("empty")) {
+                try {
+                    printWriter = new PrintWriter(client.getOutputStream());
+                    printWriter.write(data+"\n");
+                    printWriter.flush();
+                    Thread.sleep(100);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        printWriter.close();
     }
 }

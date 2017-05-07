@@ -41,12 +41,4 @@ public class MainActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
-
-    public void pushDown(View view){
-
-    }
-
-    public void pushUp(View view){
-
-    }
 }
